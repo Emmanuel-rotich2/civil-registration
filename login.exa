@@ -1,0 +1,38 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = ""; 
+$database = "user_registration";
+
+$conn = mysqli_connect($servername, $username, $password, $database);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $national_id = $_POST['national_id'];
+    $password = $_POST['password'];
+    $sql = "SELECT * FROM users WHERE national_id = '$national_id' AND password = '$password'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) == 1) {
+        header("Location: index.php");
+        exit();
+    } else {
+        $error_message = "Invalid national ID or password. Please try again.";
+    }
+}
+?>
+
+
+
+?php
+mysqli_close($conn);
+?>
+
+after close form{
+    <?php
+            if (isset($error_message)) {
+                echo "<p style='color: red;'>$error_message</p>";
+            }
+            ?>
+}

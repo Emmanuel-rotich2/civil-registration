@@ -1,4 +1,6 @@
 <?php
+session_start(); 
+
 $servername = "localhost";
 $username = "root";
 $password = ""; 
@@ -8,22 +10,34 @@ $conn = mysqli_connect($servername, $username, $password, $database);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $full_name = mysqli_real_escape_string($conn, $_POST["full_name"]);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    
-    $sql = "SELECT * FROM users WHERE full_name='$full_name' AND password = '$password'";
-    $result = mysqli_query($conn, $sql);
+    $password = $_POST['password'];
 
-    if (mysqli_num_rows($result) == 1) {
-        echo "<script>alert('Login successful!');</script>";
-        header("Location: index.php");
-        exit();
+    $sql = "SELECT * FROM users WHERE full_name = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $full_name);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_assoc($result)) {
+        if (password_verify($password, $row['password'])) {
+            $_SESSION["username"] = $full_name;
+            $_SESSION["login_time"] = time();
+
+            echo "<script>alert('Login successful!');</script>";
+            header("Location: index.php");
+            exit();
+        } else {
+            $error_message = "Invalid username or password. Please try again.";
+        }
     } else {
         $error_message = "Invalid username or password. Please try again.";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

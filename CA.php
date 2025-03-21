@@ -1,5 +1,14 @@
 <?php
 session_start();
+ 
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+if (!isset($_SESSION['login_time'])) {
+    $_SESSION['login_time'] = time();
+}
 
 $servername = "localhost";
 $username = "root";
@@ -103,10 +112,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['searchDate'])) {
             height: 100px;"></h2><br>
         <h1 style="color: #fff;font-size:30px;margin: 0;
             line-height: 50px">CIVIL REGISTRY</h1>
-        <a href="index.php" style="color: #000;float: right; margin-right:20px;"><i class="fa fa-backward" aria-hidden="true">Back</i></a><br>
+             <div style="float:right; color:#fff;margin-top:0px; margin-right:20px;">
+             <h1 >Welcome, <?php echo $_SESSION['username']; ?>!</h1>
+
+<p>Session Time: <span id="sessionTimer">0 min 0 sec</span></p>
+    </div><br>
     </section><br>
-    <form id="recordForm" method="post">
-  
+    <form id="recordForm" method="post"><br>
+    <a href="index.php" style="color: #000;float: right; margin-right:20px;"><i class="fa fa-backward" aria-hidden="true">Back</i></a><br><br>
     <div style="background-color:  lightgreen; padding: 10px; margin-bottom: 20px;">
         <h2>Applicant Information</h2>
         <label for="recordAPPLIC">APPLICATION SNO:</label>
@@ -154,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['searchDate'])) {
     </div><br>
     
 </form>
-<form id="certificateForm" style="margin-left:">
+<form id="certificateForm" style="margin-left:20px;">
     <label for="searchDate">Select Date:</label>
     <input type="date" id="searchDate" name="searchDate" required>
     <button type="button" onclick="getCertificateCount()">Get Count</button>
@@ -258,6 +271,20 @@ function getCertificateCount() {
         searchRecords(searchTerm); 
     });
 </script>
+<script>
+        let loginTime = <?php echo $_SESSION['login_time']; ?>;
+
+        function updateTimer() {
+            let currentTime = Math.floor(Date.now() / 1000); 
+            let sessionDuration = currentTime - loginTime;
+            
+            let minutes = Math.floor(sessionDuration / 60);
+            let seconds = sessionDuration % 60;
+
+            document.getElementById("sessionTimer").innerText = minutes + " min " + seconds + " sec";
+        }
+        setInterval(updateTimer, 1000);
+    </script>
 
 </body>
 

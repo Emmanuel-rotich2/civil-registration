@@ -1,9 +1,20 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+if (!isset($_SESSION['login_time'])) {
+    $_SESSION['login_time'] = time();
+}
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $database = "registration_system";
+
 $conn = mysqli_connect($servername, $username, $password, $database);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
@@ -16,30 +27,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $notification_to = $_POST['recordNOTIFICATION2'];
     $entry_from = $_POST['recordENTRY1'];
     $entry_to = $_POST['recordENTRY2'];
-    $check_sql = "SELECT * FROM records 
-                  WHERE notification_from = '$notification_from' 
-                  AND notification_to = '$notification_to'";
 
+    $check_sql = "SELECT * FROM records WHERE notification_from = '$notification_from' AND notification_to = '$notification_to'";
     $result = mysqli_query($conn, $check_sql);
 
     if (mysqli_num_rows($result) > 0) {
         echo "<script>alert('Duplicate record found for the provided notification range!');</script>";
-        echo "<script>window.location = 'index.php';</script>";
     } else {
-       
         $sql = "INSERT INTO records (volume, place_of_birth, notification_from, notification_to, entry_from, entry_to) 
                 VALUES ('$volume', '$place_of_birth', '$notification_from', '$notification_to', '$entry_from', '$entry_to')";
 
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Record successfully added');</script>";
-            echo "<script>window.location = 'index.php';</script>";
         } else {
-            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+            echo "Error: " . mysqli_error($conn);
         }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
     <style>
+
         .fixed-header {
             position: fixed;
             top: 0;
@@ -65,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         body {
             padding-top: 100px; 
         }
+
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -92,15 +99,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body class="bg-light">
+
     <header class="fixed-header text-white text-center">
         <div class="container header-container">
+            <img src="IMAGES/download 12.png" alt="Logo" style="float:left;">
             <h1>CIVIL REGISTRY</h1>
-            <div id="timer">Session Time: 00h 00m 00s</div>
-            <a href="logout.php" onclick="return confirmLogout();" class="btn btn-warning">Logout</a>
+            <h1 >Welcome, <?php echo $_SESSION['username']; ?>!</h1>
+
+<p>Session Time: <span id="sessionTimer">0 min 0 sec</span></p><br><br>
+
         </div>
     </header>
 
     <div class="container mt-4">
+    <a href="login.php" onclick="return confirmLogout();" style="float:right; text-decoration:none;">
+                <i class="fa fa-sign-out" aria-hidden="true"></i> Logout
+            </a><br><br>
         <a href="CA.php" class="btn btn-outline-dark float-end">Go to CA</a>
         <h3 class="mb-3">Add New Record</h3>
         <form id="recordForm" method="post" class="p-4 border rounded bg-white">
@@ -198,26 +212,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             return confirm("Are you sure you want to log out?");
         }
     </script>
-<script>
-        var loginTime = <?php echo $loginTime * 1000; ?>;
+     <script>
+        let loginTime = <?php echo $_SESSION['login_time']; ?>;
 
         function updateTimer() {
-            var now = new Date().getTime();
-            var elapsed = now - loginTime;
+            let currentTime = Math.floor(Date.now() / 1000); 
+            let sessionDuration = currentTime - loginTime;
+            
+            let minutes = Math.floor(sessionDuration / 60);
+            let seconds = sessionDuration % 60;
 
-            var hours = Math.floor(elapsed / (1000 * 60 * 60));
-            var minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-
-            document.getElementById("timer").innerHTML = `Session Time: ${hours}h ${minutes}m ${seconds}s`;
+            document.getElementById("sessionTimer").innerText = minutes + " min " + seconds + " sec";
         }
-
         setInterval(updateTimer, 1000);
-
-        function confirmLogout() {
-            return confirm("Are you sure you want to log out?");
-        }
     </script>
+
 </body>
 </html>
 

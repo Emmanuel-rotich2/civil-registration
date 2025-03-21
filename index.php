@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -50,24 +51,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
     <style>
-        /* Fixed Header */
         .fixed-header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            background-color: #dc3545; /* Red theme */
+            background-color: #dc3545; 
             padding: 15px 0;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Prevent content from being hidden behind fixed header */
         body {
-            padding-top: 100px; /* Adjust to match header height */
+            padding-top: 100px; 
         }
-
-        /* Header container for alignment */
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -95,15 +92,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body class="bg-light">
-
-    <!-- Fixed Header -->
     <header class="fixed-header text-white text-center">
         <div class="container header-container">
-            <img src="IMAGES/download 12.png" alt="Logo">
             <h1>CIVIL REGISTRY</h1>
-            <a href="login.php" onclick="return confirmLogout();">
-                <i class="fa fa-sign-out" aria-hidden="true"></i> Logout
-            </a>
+            <div id="timer">Session Time: 00h 00m 00s</div>
+            <a href="logout.php" onclick="return confirmLogout();" class="btn btn-warning">Logout</a>
         </div>
     </header>
 
@@ -205,7 +198,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             return confirm("Are you sure you want to log out?");
         }
     </script>
+<script>
+        var loginTime = <?php echo $loginTime * 1000; ?>;
 
+        function updateTimer() {
+            var now = new Date().getTime();
+            var elapsed = now - loginTime;
+
+            var hours = Math.floor(elapsed / (1000 * 60 * 60));
+            var minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").innerHTML = `Session Time: ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        setInterval(updateTimer, 1000);
+
+        function confirmLogout() {
+            return confirm("Are you sure you want to log out?");
+        }
+    </script>
 </body>
 </html>
 

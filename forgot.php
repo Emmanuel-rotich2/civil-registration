@@ -1,116 +1,118 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     $full_name = $_POST["full_name"];
     $new_password = $_POST["password"];
     $confirm_password = $_POST["confirm_password"];
 
-   
     if ($new_password !== $confirm_password) {
         echo "<script>alert('Passwords do not match');</script>";
         echo "<script>window.location = 'forgot.php';</script>";
-    } else {
-        
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "registration_system";
-
-        
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-    
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-
-        $sql = "UPDATE users SET password = '" . $new_password . "' WHERE full_name = '" . $full_name. "'";
-
-        if ($conn->query($sql) === TRUE) {
-            echo "<script>alert('Password reset successfully');</script>";
-            echo "<script>window.location = 'login.php';</script>";
-        } else {
-            echo "Error updating password: " . $conn->error;
-        }
-
-        $conn->close();
+        exit;
     }
+
+    if (strlen($new_password) < 8 || !preg_match("/[A-Z]/", $new_password) || !preg_match("/[0-9]/", $new_password) || !preg_match("/[@$!%*?&]/", $new_password)) {
+        echo "<script>alert('Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.');</script>";
+        echo "<script>window.location = 'forgot.php';</script>";
+        exit;
+    }
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "registration_system";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+    $stmt = $conn->prepare("UPDATE users SET password = ? WHERE full_name = ?");
+    $stmt->bind_param("ss", $hashed_password, $full_name);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Password reset successfully');</script>";
+        echo "<script>window.location = 'login.php';</script>";
+    } else {
+        echo "Error updating password: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
 }
 ?>
 
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Do</title>
+    <title>Reset Password</title>
     <style>
-   
-   body {
+        body {
             background-image: url(IMAGES/12.jpg);
             background-position: center;
             background-size: cover;
             height: 100vh;
+            font-family: Arial, sans-serif;
         }
 
-        div {
-            background-color: red;
+        .container {
+            width: 350px;
+            margin: 80px auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
             text-align: center;
-            padding: 10px;
-            overflow: hidden;
+            color: green;
         }
 
-    div img {
-        float: left;
-        margin-right: 10px;
-        height: 100px;
-        margin-top: 2px;
-    }
+        label {
+            font-weight: bold;
+        }
 
-    div h1 {
-        margin: 0;
-        line-height: 50px;
-        color: #fff;
-        font-size: 50px;
-    }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-    nav {
-        text-align: center; 
-    }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-    section {
-        background-color: cornsilk;
-        width: 340px;
-        margin: auto; 
-        padding: 20px; 
-    }
-</style>
+        button:hover {
+            background-color: darkgreen;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <h2> <img src="IMAGES/download 12.png"></h2><br>
-            <h1>REGISTRATION RECORD </h1>
-        </div><br><br>
-        <section>
-            <h1 style="text-align: center;color: green;">RESET PASSWORD</h1>
-            <nav>
-                <form method="post">
-                    <label>USER NAME</label><br>
-                    <input type="text" name="full_name" required><br><br>
-                    <label>NEW PASSWORD:</label><br>
-                    <input type="password" name="password" required><br><br>
-                    <label>RE-ENTER PASSWORD:</label><br>
-                    <input type="password" name="confirm_password" required><br><br>
-                    <button type="submit" name="submit" style="display: block; margin: 0 auto;background-color: green;color: #fff;">RESET</button><br>
-                </form>
-            </nav>
-        </section>
+    <div class="container">
+        <h1>Reset Password</h1>
+        <form method="post">
+            <label>Username</label>
+            <input type="text" name="full_name" required>
+            <label>New Password</label>
+            <input type="password" name="password" required>
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password" required>
+            <button type="submit">Reset</button>
+        </form>
+    </div>
 </body>
 </html>
-
-
-
-
-

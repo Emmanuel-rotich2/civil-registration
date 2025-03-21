@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['searchDate'])) {
         <h1 style="color: #fff;font-size:30px;margin: 0;
             line-height: 50px">CIVIL REGISTRY</h1>
         <a href="index.php" style="color: #000;float: right; margin-right:20px;"><i class="fa fa-backward" aria-hidden="true">Back</i></a><br>
-    </section><br><br>``
+    </section><br>
     <form id="recordForm" method="post">
   
     <div style="background-color:  lightgreen; padding: 10px; margin-bottom: 20px;">

@@ -110,15 +110,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['searchDate'])) {
 <h2> <img src="IMAGES/download 12.png" style="  float: left;
             margin-right: 10px;
             height: 100px;"></h2><br>
-        <h1 style="color: #fff;font-size:30px;margin: 0;
-            line-height: 50px">CIVIL REGISTRY</h1>
-             <div style="float:right; color:#fff;margin-top:0px; margin-right:20px;">
+             <div style="text-align:center; color:#fff;margin-top:0px; margin-right:20px;">
              <h1 >Welcome, <?php echo $_SESSION['username']; ?>!</h1>
-
-<p>Session Time: <span id="sessionTimer">0 min 0 sec</span></p>
-    </div><br>
+             </div><br>
+<p style="text-align:right; color:#fff;margin-top:0px; margin-right:20px;">Session Time: <span id="sessionTimer">0 min 0 sec</span></p>
+  
     </section><br>
-    <form id="recordForm" method="post"><br>
+    <form id="recordForm" method="post">
     <a href="index.php" style="color: #000;float: right; margin-right:20px;"><i class="fa fa-backward" aria-hidden="true">Back</i></a><br><br>
     <div style="background-color:  lightgreen; padding: 10px; margin-bottom: 20px;">
         <h2>Applicant Information</h2>

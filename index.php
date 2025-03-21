@@ -103,7 +103,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <header class="fixed-header text-white text-center">
         <div class="container header-container">
             <img src="IMAGES/download 12.png" alt="Logo" style="float:left;">
-            <h1>CIVIL REGISTRY</h1>
             <h1 >Welcome, <?php echo $_SESSION['username']; ?>!</h1>
 
 <p>Session Time: <span id="sessionTimer">0 min 0 sec</span></p><br><br>
